@@ -1,9 +1,16 @@
 {
-  "cleanUrls": true,
-  "rewrites": [
+  "version": 2,
+  "name": "SNI-HOST-TESTER-GENERATOR-",
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "index.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
