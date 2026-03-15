@@ -1,11 +1,9 @@
 {
   "name": "thugkeed-network",
   "version": "1.0.0",
-  "description": "THUGKEED NETWORK - SNI Generator & Host Scanner",
-  "author": "THUGKEED TECH",
-  "license": "MIT",
+  "description": "THUGKEED NETWORK SNI PLATFORM",
+  "private": true,
   "scripts": {
-    "dev": "vercel dev",
-    "build": "echo build complete"
+    "build": "echo Build complete"
   }
 }
