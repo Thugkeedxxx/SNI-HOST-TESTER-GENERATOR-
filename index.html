@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>THUGKEED SNI PLATFORM</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#010101;
+color:white;
+overflow-x:hidden;
+}
+
+/* STAR FIELD */
+
+#stars{
+position:fixed;
+width:100%;
+height:100%;
+z-index:0;
+}
+
+.star{
+position:absolute;
+width:2px;
+height:2px;
+background:white;
+animation:twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle{
+from{opacity:0.3}
+to{opacity:1}
+}
+
+/* PANEL */
+
+.container{
+position:relative;
+z-index:2;
+max-width:480px;
+margin:auto;
+margin-top:6vh;
+background:rgba(10,10,10,0.95);
+padding:30px;
+border-radius:12px;
+box-shadow:0 0 35px rgba(0,255,150,0.5);
+}
+
+/* LOGO */
+
+.logo{
+font-size:32px;
+text-align:center;
+font-weight:bold;
+color:#7fff00;
+text-shadow:0 0 10px #7fff00,0 0 25px #00ffaa;
+letter-spacing:3px;
+}
+
+.sub{
+text-align:center;
+font-size:13px;
+color:#aaa;
+margin-bottom:12px;
+}
+
+/* INPUT */
+
+textarea{
+width:100%;
+height:120px;
+background:#000;
+border:none;
+border-radius:6px;
+color:white;
+padding:10px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-top:10px;
+background:#000;
+border:none;
+border-radius:6px;
+color:white;
+}
+
+/* BUTTON */
+
+button{
+width:100%;
+padding:10px;
+margin-top:8px;
+border:none;
+border-radius:6px;
+background:linear-gradient(90deg,#7fff00,#00ffaa);
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+transform:scale(1.05);
+}
+
+/* RESULTS */
+
+.results{
+margin-top:10px;
+max-height:200px;
+overflow:auto;
+font-size:14px;
+}
+
+.online{color:#00ffaa}
+.offline{color:#ff4d4d}
+.fast{color:#00ffaa}
+.medium{color:#ffd000}
+.slow{color:#ff6b6b}
+
+/* PROGRESS */
+
+.progress{
+height:6px;
+background:#222;
+border-radius:6px;
+margin-top:10px;
+}
+
+.bar{
+height:100%;
+width:0%;
+background:#00ffaa;
+}
+
+.footer{
+text-align:center;
+font-size:11px;
+color:#777;
+margin-top:15px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="stars"></div>
+
+<div class="container">
+
+<div class="logo">THUGKEED</div>
+<div class="sub">SNI GENERATOR & CHECKER</div>
+
+<textarea id="generated" placeholder="Generated SNI hosts will appear here"></textarea>
+
+<button onclick="generateHosts()">GENERATE SNI HOSTS</button>
+
+<input id="checkHost" placeholder="Enter SNI host to check">
+
+<button onclick="checkHost()">CHECK HOST</button>
+<button onclick="copyHosts()">COPY WORKING</button>
+<button onclick="downloadHosts()">DOWNLOAD HOSTS</button>
+
+<div class="progress">
+<div class="bar" id="bar"></div>
+</div>
+
+<div class="results" id="results"></div>
+
+<div class="footer">Powered by THUGKEED TECH</div>
+
+</div>
+
+<script>
+
+/* STAR BACKGROUND */
+
+const stars=document.getElementById("stars")
+
+for(let i=0;i<200;i++){
+let s=document.createElement("div")
+s.className="star"
+s.style.left=Math.random()*100+"%"
+s.style.top=Math.random()*100+"%"
+s.style.animationDuration=(Math.random()*3+1)+"s"
+stars.appendChild(s)
+}
+
+/* WORKING HOSTS */
+
+let working=[]
+
+/* GENERATOR */
+
+function generateHosts(){
+
+let domains=[
+"cloudflare.com",
+"amazonaws.com",
+"google.com",
+"microsoft.com",
+"akamai.net",
+"facebook.com",
+"whatsapp.com",
+"youtube.com"
+]
+
+let prefixes=[
+"cdn",
+"static",
+"media",
+"img",
+"edge",
+"api",
+"cache",
+"connect",
+"server",
+"gateway"
+]
+
+let generated=[]
+
+for(let i=0;i<15;i++){
+
+let p=prefixes[Math.floor(Math.random()*prefixes.length)]
+let d=domains[Math.floor(Math.random()*domains.length)]
+
+generated.push(p+"."+d)
+
+}
+
+document.getElementById("generated").value=generated.join("\n")
+
+}
+
+/* CHECK HOST */
+
+async function checkHost(){
+
+const host=document.getElementById("checkHost").value.trim()
+const results=document.getElementById("results")
+const bar=document.getElementById("bar")
+
+if(!host){
+alert("Enter host")
+return
+}
+
+results.innerHTML="Checking "+host+"..."
+
+try{
+
+const start=Date.now()
+
+await fetch("https://"+host,{mode:"no-cors"})
+
+const latency=Date.now()-start
+
+let speed="slow"
+
+if(latency<200) speed="fast"
+else if(latency<500) speed="medium"
+
+results.innerHTML=host+" <span class='online'>ONLINE</span> ("+latency+"ms) <span class='"+speed+"'>"+speed.toUpperCase()+"</span>"
+
+working.push(host)
+
+bar.style.width="100%"
+
+}catch{
+
+results.innerHTML=host+" <span class='offline'>OFFLINE</span>"
+
+bar.style.width="0%"
+
+}
+
+}
+
+/* COPY */
+
+function copyHosts(){
+
+if(working.length==0){
+alert("No working hosts")
+return
+}
+
+navigator.clipboard.writeText(working.join("\n"))
+alert("Copied!")
+
+}
+
+/* DOWNLOAD */
+
+function downloadHosts(){
+
+let blob=new Blob([working.join("\n")],{type:"text/plain"})
+let a=document.createElement("a")
+
+a.href=URL.createObjectURL(blob)
+a.download="thugkeed_sni_hosts.txt"
+
+a.click()
+
+}
+
+</script>
+
+</body>
+</html>
